@@ -70,6 +70,21 @@ HAL_StatusTypeDef LED_DeInit(struct LedStruct *led)
 }
 
 /**
+ * @brief Change default LED active mode
+ * @param led Pointer to LedStruct handle
+ * @param state The new mode
+ * @return HAL Status
+ */
+HAL_StatusTypeDef LED_SetActiveLow(struct LedStruct *led, uint8_t state)
+{
+  __HAL_LOCK(led);
+  led->active_low = state;
+  __HAL_UNLOCK(led);
+
+  return (HAL_OK);
+}
+
+/**
  * @brief Change selected LED state
  * @param led Pointer to LedStruct handle
  * @param state The new led state
@@ -104,15 +119,17 @@ HAL_StatusTypeDef LED_Toggle(struct LedStruct *led)
 }
 
 /**
- * @brief Change default LED active mode
+ * @brief Blink selected LED state
  * @param led Pointer to LedStruct handle
- * @param state The new mode
+ * @param timeout Timeout duration
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_SetActiveLow(struct LedStruct *led, uint8_t state)
+HAL_StatusTypeDef LED_Blink(struct LedStruct *led, uint32_t timeout)
 {
   __HAL_LOCK(led);
-  led->active_low = state;
+  LED_Write(led, GPIO_PIN_SET);
+  DELAY_MS(timeout);
+  LED_Write(led, GPIO_PIN_RESET);
   __HAL_UNLOCK(led);
 
   return (HAL_OK);
