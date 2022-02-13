@@ -3,7 +3,7 @@
 ## How to use the module
 
 ```c
-#include "stm32f4xx-hal-button-module/button.h"
+#include "stm32f4xx-hal-led-module/led.h"
 
 int main(void)
 {
@@ -26,5 +26,8 @@ int main(void)
     /* Blink the LED for 500 ms */
     LED_Blink(&hled, 500);
   }
+  
+  /* DeInit the LED */
+  LED_DeInit(&hled);
 }
 ```
