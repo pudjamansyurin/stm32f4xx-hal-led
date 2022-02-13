@@ -46,7 +46,7 @@ HAL_StatusTypeDef LED_Init(struct LedStruct *led,
   GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
   HAL_GPIO_Init(led->port, &GPIO_InitStruct);
 
-  LED_SetActiveLow(led, 0);
+  LED_SetActiveMode(led, LED_ACTIVE_HIGH);
   LED_Write(led, GPIO_PIN_RESET);
   return (HAL_OK);
 }
@@ -75,10 +75,11 @@ HAL_StatusTypeDef LED_DeInit(struct LedStruct *led)
  * @param state The new mode
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_SetActiveLow(struct LedStruct *led, uint8_t state)
+HAL_StatusTypeDef LED_SetActiveMode(struct LedStruct *led,
+                                    enum LedActiveMode mode)
 {
   __HAL_LOCK(led);
-  led->active_low = state;
+  led->active_mode = mode;
   __HAL_UNLOCK(led);
 
   return (HAL_OK);
@@ -94,7 +95,7 @@ HAL_StatusTypeDef LED_Write(struct LedStruct *led, GPIO_PinState state)
 {
   __HAL_LOCK(led);
   /* Check active mode */
-  if (led->active_low) {
+  if (led->active_mode == LED_ACTIVE_LOW) {
     state = !state;
   }
   /* Write the new state */
