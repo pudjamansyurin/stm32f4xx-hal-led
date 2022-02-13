@@ -19,7 +19,7 @@ enum LedActiveMode {
   LED_ACTIVE_HIGH
 };
 
-struct LedStruct {
+struct Led {
   GPIO_TypeDef *port;
   uint16_t pin;
   enum LedActiveMode active_mode;
@@ -27,14 +27,11 @@ struct LedStruct {
 };
 
 /* Public function definitions */
-HAL_StatusTypeDef LED_Init(struct LedStruct *led,
-                           GPIO_TypeDef *port,
-                           uint16_t pin);
-HAL_StatusTypeDef LED_DeInit(struct LedStruct *led);
-HAL_StatusTypeDef LED_SetActiveMode(struct LedStruct *led,
-                                    enum LedActiveMode mode);
-HAL_StatusTypeDef LED_Write(struct LedStruct *led, GPIO_PinState state);
-HAL_StatusTypeDef LED_Toggle(struct LedStruct *led);
-HAL_StatusTypeDef LED_Blink(struct LedStruct *led, uint32_t timeout);
+HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint16_t pin);
+HAL_StatusTypeDef LED_DeInit(struct Led *led);
+HAL_StatusTypeDef LED_SetActiveMode(struct Led *led, enum LedActiveMode mode);
+HAL_StatusTypeDef LED_Write(struct Led *led, GPIO_PinState state);
+HAL_StatusTypeDef LED_Toggle(struct Led *led);
+HAL_StatusTypeDef LED_Blink(struct Led *led, uint32_t timeout);
 
 #endif /* INC_MODULES_LED_H_ */

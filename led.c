@@ -12,14 +12,12 @@ static inline void PortEnableClock(GPIO_TypeDef *port);
 /* Public function definitions */
 /**
  * @brief Configures LED GPIO.
- * @param led Pointer to LedStruct handle
+ * @param led Pointer to Led handle
  * @param port The GPIO port used
  * @param pin The GPIO pin used
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_Init(struct LedStruct *led,
-                           GPIO_TypeDef *port,
-                           uint16_t pin)
+HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint16_t pin)
 {
   GPIO_InitTypeDef GPIO_InitStruct;
 
@@ -54,10 +52,10 @@ HAL_StatusTypeDef LED_Init(struct LedStruct *led,
 /**
  * @brief DeInit LEDs.
  * @note Led DeInit does not disable the GPIO clock
- * @param led Pointer to LedStruct handle
+ * @param led Pointer to Led handle
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_DeInit(struct LedStruct *led)
+HAL_StatusTypeDef LED_DeInit(struct Led *led)
 {
   __HAL_LOCK(led);
   /* Turn off LED */
@@ -71,12 +69,11 @@ HAL_StatusTypeDef LED_DeInit(struct LedStruct *led)
 
 /**
  * @brief Change default LED active mode
- * @param led Pointer to LedStruct handle
+ * @param led Pointer to Led handle
  * @param state The new mode
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_SetActiveMode(struct LedStruct *led,
-                                    enum LedActiveMode mode)
+HAL_StatusTypeDef LED_SetActiveMode(struct Led *led, enum LedActiveMode mode)
 {
   __HAL_LOCK(led);
   led->active_mode = mode;
@@ -87,11 +84,11 @@ HAL_StatusTypeDef LED_SetActiveMode(struct LedStruct *led,
 
 /**
  * @brief Change selected LED state
- * @param led Pointer to LedStruct handle
+ * @param led Pointer to Led handle
  * @param state The new led state
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_Write(struct LedStruct *led, GPIO_PinState state)
+HAL_StatusTypeDef LED_Write(struct Led *led, GPIO_PinState state)
 {
   __HAL_LOCK(led);
   /* Check active mode */
@@ -107,10 +104,10 @@ HAL_StatusTypeDef LED_Write(struct LedStruct *led, GPIO_PinState state)
 
 /**
  * @brief Toggle selected LED state
- * @param led Pointer to LedStruct handle
+ * @param led Pointer to Led handle
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_Toggle(struct LedStruct *led)
+HAL_StatusTypeDef LED_Toggle(struct Led *led)
 {
   __HAL_LOCK(led);
   HAL_GPIO_TogglePin(led->port, led->pin);
@@ -121,11 +118,11 @@ HAL_StatusTypeDef LED_Toggle(struct LedStruct *led)
 
 /**
  * @brief Blink selected LED state
- * @param led Pointer to LedStruct handle
+ * @param led Pointer to Led handle
  * @param timeout Timeout duration
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_Blink(struct LedStruct *led, uint32_t timeout)
+HAL_StatusTypeDef LED_Blink(struct Led *led, uint32_t timeout)
 {
   __HAL_LOCK(led);
   LED_Write(led, GPIO_PIN_SET);
