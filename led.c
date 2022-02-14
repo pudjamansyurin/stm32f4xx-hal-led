@@ -5,9 +5,7 @@
  *      Author: pudja
  */
 #include "./led.h"
-
-/* Private function declarations */
-static inline void PortEnableClock(GPIO_TypeDef *port);
+#include "stm32f4xx-hal-common/common.h"
 
 /* Public function definitions */
 /**
@@ -35,7 +33,7 @@ HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint16_t pin)
   led->pin = pin;
 
   /* Enable the GPIO Clock */
-  PortEnableClock(port);
+  CMN_PortEnableClock(port);
 
   /* Configure the GPIO pin */
   GPIO_InitStruct.Pin = led->pin;
@@ -51,17 +49,46 @@ HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint16_t pin)
 
 /**
  * @brief DeInit LEDs.
- * @note Led DeInit does not disable the GPIO clock
+ * @note It is optional for disable the GPIO clock
  * @param led Pointer to Led handle
+ * @param disable Disable the port clock
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_DeInit(struct Led *led)
+HAL_StatusTypeDef LED_DeInit(struct Led *led, uint8_t disable)
 {
   __HAL_LOCK(led);
   /* Turn off LED */
   LED_Write(led, GPIO_PIN_RESET);
   /* DeInit the GPIO pin */
   HAL_GPIO_DeInit(led->port, led->pin);
+
+  /* Disable clock */
+  if (disable) {
+    CMN_PortDisableClock(led->port);
+  }
+
+  __HAL_UNLOCK(led);
+  return (HAL_OK);
+}
+
+/**
+ * @brief Configure led suspend mode
+ * @param led Pointer to Led handle
+ * @param on Suspend state
+ * @return HAL Status
+ */
+HAL_StatusTypeDef LED_Suspend(struct Led *led, uint8_t on)
+{
+  __HAL_LOCK(led);
+  /* Turn off LED */
+  LED_Write(led, GPIO_PIN_RESET);
+
+  /* Modify clock */
+  if (on) {
+    CMN_PortDisableClock(led->port);
+  } else {
+    CMN_PortEnableClock(led->port);
+  }
 
   __HAL_UNLOCK(led);
   return (HAL_OK);
@@ -131,32 +158,4 @@ HAL_StatusTypeDef LED_Blink(struct Led *led, uint32_t timeout)
   __HAL_UNLOCK(led);
 
   return (HAL_OK);
-}
-
-/* Private function definitions */
-/**
- * @brief Enable GPIO clock
- * @param port Port to be enabled
- */
-static inline void PortEnableClock(GPIO_TypeDef *port)
-{
-  assert_param(IS_GPIO_ALL_INSTANCE(port));
-
-  /* Enable appropriate GPIO clock */
-  if (port == GPIOH)
-    __HAL_RCC_GPIOH_CLK_ENABLE();
-  else if (port == GPIOG)
-    __HAL_RCC_GPIOG_CLK_ENABLE();
-  else if (port == GPIOF)
-    __HAL_RCC_GPIOF_CLK_ENABLE();
-  else if (port == GPIOE)
-    __HAL_RCC_GPIOE_CLK_ENABLE();
-  else if (port == GPIOD)
-    __HAL_RCC_GPIOD_CLK_ENABLE();
-  else if (port == GPIOC)
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-  else if (port == GPIOB)
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-  else if (port == GPIOA)
-    __HAL_RCC_GPIOA_CLK_ENABLE();
 }
