@@ -12,29 +12,32 @@
  * @brief Configures LED GPIO.
  * @param led Pointer to Led handle
  * @param port The GPIO port used
- * @param pin The GPIO pin used
+ * @param pin_num The GPIO pin number
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint16_t pin)
+HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint8_t pin_num)
 {
   /* Check the structure handle allocation */
   if (led == NULL)
     return HAL_ERROR;
+  if (pin_num >= GPIO_PIN_CNT) {
+    return HAL_ERROR;
+  }
 
   /* Check the parameters */
   assert_param(IS_GPIO_ALL_INSTANCE(port));
-  assert_param(IS_GPIO_PIN(pin));
+  assert_param(IS_GPIO_PIN(GPIO_PIN(pin_num)));
 
   /* Initialize properties */
   led->Lock = HAL_UNLOCKED;
   led->port = port;
-  led->pin = pin;
+  led->pin_num = pin_num;
 
   /* Enable the GPIO Clock */
   CMN_PortEnableClock(port);
 
   /* Configure the GPIO pin */
-  led->init.Pin = led->pin;
+  led->init.Pin = GPIO_PIN(led->pin_num);
   led->init.Mode = GPIO_MODE_OUTPUT_PP;
   led->init.Pull = GPIO_NOPULL;
   led->init.Speed = GPIO_SPEED_FAST;
@@ -57,7 +60,7 @@ HAL_StatusTypeDef LED_DeInit(struct Led *led)
   /* Turn off LED */
   LED_Write(led, GPIO_PIN_RESET);
   /* DeInit the GPIO pin */
-  HAL_GPIO_DeInit(led->port, led->pin);
+  HAL_GPIO_DeInit(led->port, GPIO_PIN(led->pin_num));
 
   __HAL_UNLOCK(led);
   return (HAL_OK);
@@ -80,7 +83,7 @@ HAL_StatusTypeDef LED_Suspend(struct Led *led, uint8_t suspend)
 
   /* Modify GPIO state */
   if (suspend) {
-    HAL_GPIO_DeInit(led->port, led->pin);
+    HAL_GPIO_DeInit(led->port, GPIO_PIN(led->pin_num));
   } else {
     HAL_GPIO_Init(led->port, &led->init);
   }
@@ -118,7 +121,7 @@ HAL_StatusTypeDef LED_Write(struct Led *led, GPIO_PinState state)
     state = !state;
   }
   /* Write the new state */
-  HAL_GPIO_WritePin(led->port, led->pin, state);
+  HAL_GPIO_WritePin(led->port, GPIO_PIN(led->pin_num), state);
   __HAL_UNLOCK(led);
 
   return (HAL_OK);
@@ -132,7 +135,7 @@ HAL_StatusTypeDef LED_Write(struct Led *led, GPIO_PinState state)
 HAL_StatusTypeDef LED_Toggle(struct Led *led)
 {
   __HAL_LOCK(led);
-  HAL_GPIO_TogglePin(led->port, led->pin);
+  HAL_GPIO_TogglePin(led->port, GPIO_PIN(led->pin_num));
   __HAL_UNLOCK(led);
 
   return (HAL_OK);
