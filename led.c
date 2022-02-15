@@ -68,7 +68,7 @@ HAL_StatusTypeDef LED_DeInit(struct Led *led)
 
 /**
  * @brief Configure led suspend mode
- * @note The clock port is not disabled by default
+ * @note The clock port is also disabled
  * @param led Pointer to Led handle
  * @param suspend Suspend state
  * @return HAL Status
@@ -76,15 +76,13 @@ HAL_StatusTypeDef LED_DeInit(struct Led *led)
 HAL_StatusTypeDef LED_Suspend(struct Led *led, uint8_t suspend)
 {
   __HAL_LOCK(led);
-  /* Enable clock only when activation */
-  if (!suspend) {
-    CMN_PortEnableClock(led->port);
-  }
 
-  /* Modify GPIO state */
+  /* Modify GPIO and clock state */
   if (suspend) {
     HAL_GPIO_DeInit(led->port, GPIO_PIN(led->pin_num));
+    CMN_PortDisableClock(led->port);
   } else {
+    CMN_PortEnableClock(led->port);
     HAL_GPIO_Init(led->port, &led->init);
   }
 

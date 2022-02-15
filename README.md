@@ -12,7 +12,7 @@ int main(void)
   struct LedStruct hled;
 
   /* Initialize the LED for port A5 */
-  LED_Init(&hled, GPIOA, GPIO_PIN_5);
+  LED_Init(&hled, GPIOA, 5);
 
   /* Set default to Active High */
   LED_SetActiveMode(&hled, LED_ACTIVE_HIGH);
@@ -20,7 +20,7 @@ int main(void)
   /* Super loop */
   while(1) {
     /* Turn on the LED */
-    LED_Write(&hled, GPIO_PIN_SET);
+    LED_Write(&hled, 1);
 
     /* Toggle the LED */
     LED_Toggle(&hled);
