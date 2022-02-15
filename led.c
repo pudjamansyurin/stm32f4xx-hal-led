@@ -17,8 +17,6 @@
  */
 HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint16_t pin)
 {
-  GPIO_InitTypeDef GPIO_InitStruct;
-
   /* Check the structure handle allocation */
   if (led == NULL)
     return HAL_ERROR;
@@ -36,11 +34,11 @@ HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint16_t pin)
   CMN_PortEnableClock(port);
 
   /* Configure the GPIO pin */
-  GPIO_InitStruct.Pin = led->pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FAST;
-  HAL_GPIO_Init(led->port, &GPIO_InitStruct);
+  led->init.Pin = led->pin;
+  led->init.Mode = GPIO_MODE_OUTPUT_PP;
+  led->init.Pull = GPIO_NOPULL;
+  led->init.Speed = GPIO_SPEED_FAST;
+  HAL_GPIO_Init(led->port, &led->init);
 
   LED_SetActiveMode(led, LED_ACTIVE_HIGH);
   LED_Write(led, GPIO_PIN_RESET);
@@ -49,12 +47,11 @@ HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint16_t pin)
 
 /**
  * @brief DeInit LEDs.
- * @note It is optional for disable the GPIO clock
+ * @note The clock port is not disabled by default
  * @param led Pointer to Led handle
- * @param disable Disable the port clock
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_DeInit(struct Led *led, uint8_t disable)
+HAL_StatusTypeDef LED_DeInit(struct Led *led)
 {
   __HAL_LOCK(led);
   /* Turn off LED */
@@ -62,32 +59,30 @@ HAL_StatusTypeDef LED_DeInit(struct Led *led, uint8_t disable)
   /* DeInit the GPIO pin */
   HAL_GPIO_DeInit(led->port, led->pin);
 
-  /* Disable clock */
-  if (disable) {
-    CMN_PortDisableClock(led->port);
-  }
-
   __HAL_UNLOCK(led);
   return (HAL_OK);
 }
 
 /**
  * @brief Configure led suspend mode
+ * @note The clock port is not disabled by default
  * @param led Pointer to Led handle
- * @param on Suspend state
+ * @param suspend Suspend state
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_Suspend(struct Led *led, uint8_t on)
+HAL_StatusTypeDef LED_Suspend(struct Led *led, uint8_t suspend)
 {
   __HAL_LOCK(led);
-  /* Turn off LED */
-  LED_Write(led, GPIO_PIN_RESET);
-
-  /* Modify clock */
-  if (on) {
-    CMN_PortDisableClock(led->port);
-  } else {
+  /* Enable clock only when activation */
+  if (!suspend) {
     CMN_PortEnableClock(led->port);
+  }
+
+  /* Modify GPIO state */
+  if (suspend) {
+    HAL_GPIO_DeInit(led->port, led->pin);
+  } else {
+    HAL_GPIO_Init(led->port, &led->init);
   }
 
   __HAL_UNLOCK(led);

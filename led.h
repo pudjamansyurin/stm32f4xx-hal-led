@@ -20,16 +20,17 @@ enum LedActiveMode {
 };
 
 struct Led {
+  HAL_LockTypeDef Lock;
   GPIO_TypeDef *port;
+  GPIO_InitTypeDef init;
   uint16_t pin;
   enum LedActiveMode active_mode;
-  HAL_LockTypeDef Lock;
 };
 
 /* Public function definitions */
 HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint16_t pin);
-HAL_StatusTypeDef LED_DeInit(struct Led *led, uint8_t disable);
-HAL_StatusTypeDef LED_Suspend(struct Led *led, uint8_t on);
+HAL_StatusTypeDef LED_DeInit(struct Led *led);
+HAL_StatusTypeDef LED_Suspend(struct Led *led, uint8_t suspend);
 HAL_StatusTypeDef LED_SetActiveMode(struct Led *led, enum LedActiveMode mode);
 HAL_StatusTypeDef LED_Write(struct Led *led, GPIO_PinState state);
 HAL_StatusTypeDef LED_Toggle(struct Led *led);
