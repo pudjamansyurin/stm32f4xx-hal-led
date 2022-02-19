@@ -24,6 +24,9 @@ int main(void)
 
     /* Toggle the LED */
     LED_Toggle(&hled);
+
+    /* Blink the LED */
+    LED_Blink(&hled, 1000, 500);
   }
 
   /* DeInit the LED */
