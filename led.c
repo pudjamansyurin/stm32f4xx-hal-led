@@ -73,7 +73,7 @@ HAL_StatusTypeDef LED_DeInit(struct Led *led)
  * @param suspend Suspend state
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_Suspend(struct Led *led, uint8_t suspend)
+HAL_StatusTypeDef LED_Suspend(struct Led *led, FunctionalState suspend)
 {
   __HAL_LOCK(led);
 
@@ -142,15 +142,16 @@ HAL_StatusTypeDef LED_Toggle(struct Led *led)
 /**
  * @brief Blink selected LED state
  * @param led Pointer to Led handle
- * @param timeout Timeout duration
+ * @param duration On and Off duration
  * @return HAL Status
  */
-HAL_StatusTypeDef LED_Blink(struct Led *led, uint32_t timeout)
+HAL_StatusTypeDef LED_Blink(struct Led *led, uint32_t duration)
 {
   __HAL_LOCK(led);
   LED_Write(led, GPIO_PIN_SET);
-  DELAY_MS(timeout);
+  DELAY_MS(duration);
   LED_Write(led, GPIO_PIN_RESET);
+  DELAY_MS(duration);
   __HAL_UNLOCK(led);
 
   return (HAL_OK);
