@@ -31,6 +31,5 @@ HAL_StatusTypeDef LED_Suspend(struct Led *led, FunctionalState suspend);
 HAL_StatusTypeDef LED_SetActiveMode(struct Led *led, enum LedActiveMode mode);
 HAL_StatusTypeDef LED_Write(struct Led *led, GPIO_PinState state);
 HAL_StatusTypeDef LED_Toggle(struct Led *led);
-HAL_StatusTypeDef LED_Blink(struct Led *led, uint32_t duration);
 
 #endif /* INC_MODULES_LED_H_ */

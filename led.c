@@ -56,9 +56,10 @@ HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint8_t pin_num)
  */
 HAL_StatusTypeDef LED_DeInit(struct Led *led)
 {
-  __HAL_LOCK(led);
   /* Turn off LED */
   LED_Write(led, GPIO_PIN_RESET);
+
+  __HAL_LOCK(led);
   /* DeInit the GPIO pin */
   HAL_GPIO_DeInit(led->port, GPIO_PIN(led->pin_num));
 
@@ -134,24 +135,6 @@ HAL_StatusTypeDef LED_Toggle(struct Led *led)
 {
   __HAL_LOCK(led);
   HAL_GPIO_TogglePin(led->port, GPIO_PIN(led->pin_num));
-  __HAL_UNLOCK(led);
-
-  return (HAL_OK);
-}
-
-/**
- * @brief Blink selected LED state
- * @param led Pointer to Led handle
- * @param duration On and Off duration
- * @return HAL Status
- */
-HAL_StatusTypeDef LED_Blink(struct Led *led, uint32_t duration)
-{
-  __HAL_LOCK(led);
-  LED_Write(led, GPIO_PIN_SET);
-  DELAY_MS(duration);
-  LED_Write(led, GPIO_PIN_RESET);
-  DELAY_MS(duration);
   __HAL_UNLOCK(led);
 
   return (HAL_OK);
