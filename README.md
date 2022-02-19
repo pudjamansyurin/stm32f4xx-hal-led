@@ -5,7 +5,7 @@
 #### **`main.c`**
 
 ```c
-#include "stm32f4xx-hal-led-module/led.h"
+#include "stm32f4xx-hal-led/led.h"
 
 int main(void)
 {
