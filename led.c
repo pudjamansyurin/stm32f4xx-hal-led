@@ -5,7 +5,7 @@
  *      Author: pudja
  */
 #include "./led.h"
-#include "stm32f4xx-hal-common/common.h"
+#include "stm32f4xx-hal-util/util.h"
 
 /* Private function declarations */
 static void _write(struct Led *led, GPIO_PinState state);
@@ -36,7 +36,7 @@ HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint8_t pin_num)
   led->pin_num = pin_num;
 
   /* Enable the GPIO Clock */
-  CMN_PortEnableClock(port);
+  UTIL_PortEnableClock(port);
 
   /* Configure the GPIO pin */
   led->init.Pin = GPIO_PIN(led->pin_num);
@@ -82,11 +82,11 @@ HAL_StatusTypeDef LED_Suspend(struct Led *led, FunctionalState suspend)
   if (suspend)
   {
     HAL_GPIO_DeInit(led->port, GPIO_PIN(led->pin_num));
-    CMN_PortDisableClock(led->port);
+    UTIL_PortDisableClock(led->port);
   }
   else
   {
-    CMN_PortEnableClock(led->port);
+    UTIL_PortEnableClock(led->port);
     HAL_GPIO_Init(led->port, &led->init);
   }
 
