@@ -9,7 +9,7 @@
 
 int main(void)
 {
-  struct LedStruct hled;
+  struct Led hled;
 
   /* Initialize the LED for port A5 */
   LED_Init(&hled, GPIOA, 5);
