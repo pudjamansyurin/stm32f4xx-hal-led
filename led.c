@@ -7,9 +7,11 @@
 #include "./led.h"
 
 /* Private macros */
-#define GPIO_PIN_CNT            (16)
-#define GPIO_PIN(__X__)         (1 << (__X__))
-#define DELAY_MS(__X__)         (HAL_Delay(__X__))
+#define DELAY_MS(__X__)             (HAL_Delay(__X__))
+#define GPIO_PIN_CNT                (16)
+#define GPIO_PIN(__X__)             (1 << (__X__))
+#define GPIO_MASK(__X__)            (((__X__) - GPIOA) / (GPIOB-GPIOA) + 1)
+#define RCC_AHB1ENR_GPIOXEN(__X__)  (GPIO_PIN(GPIO_MASK(__X__)))
 
 /* Private function declarations */
 static void _write(struct Led *led, GPIO_PinState state);
@@ -183,22 +185,11 @@ static void UTIL_PortEnableClock(GPIO_TypeDef *port)
   assert_param(IS_GPIO_ALL_INSTANCE(port));
 
   /* Enable appropriate GPIO clock */
-  if (port == GPIOH)
-    __HAL_RCC_GPIOH_CLK_ENABLE();
-  else if (port == GPIOG)
-    __HAL_RCC_GPIOG_CLK_ENABLE();
-  else if (port == GPIOF)
-    __HAL_RCC_GPIOF_CLK_ENABLE();
-  else if (port == GPIOE)
-    __HAL_RCC_GPIOE_CLK_ENABLE();
-  else if (port == GPIOD)
-    __HAL_RCC_GPIOD_CLK_ENABLE();
-  else if (port == GPIOC)
-    __HAL_RCC_GPIOC_CLK_ENABLE();
-  else if (port == GPIOB)
-    __HAL_RCC_GPIOB_CLK_ENABLE();
-  else if (port == GPIOA)
-    __HAL_RCC_GPIOA_CLK_ENABLE();
+  __IO uint32_t tmpreg = 0x00U;
+  SET_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOXEN(port));
+  /* Delay after an RCC peripheral clock enabling */
+  tmpreg = READ_BIT(RCC->AHB1ENR, RCC_AHB1ENR_GPIOXEN(port));
+  UNUSED(tmpreg);
 }
 
 /**
@@ -210,20 +201,5 @@ static void UTIL_PortDisableClock(GPIO_TypeDef *port)
   assert_param(IS_GPIO_ALL_INSTANCE(port));
 
   /* Disable appropriate GPIO clock */
-  if (port == GPIOH)
-    __HAL_RCC_GPIOH_CLK_DISABLE();
-  else if (port == GPIOG)
-    __HAL_RCC_GPIOG_CLK_DISABLE();
-  else if (port == GPIOF)
-    __HAL_RCC_GPIOF_CLK_DISABLE();
-  else if (port == GPIOE)
-    __HAL_RCC_GPIOE_CLK_DISABLE();
-  else if (port == GPIOD)
-    __HAL_RCC_GPIOD_CLK_DISABLE();
-  else if (port == GPIOC)
-    __HAL_RCC_GPIOC_CLK_DISABLE();
-  else if (port == GPIOB)
-    __HAL_RCC_GPIOB_CLK_DISABLE();
-  else if (port == GPIOA)
-    __HAL_RCC_GPIOA_CLK_DISABLE();
+  RCC->AHB1ENR &= ~(RCC_AHB1ENR_GPIOXEN(port));
 }
