@@ -50,7 +50,7 @@ HAL_StatusTypeDef LED_Init(struct Led *led, GPIO_TypeDef *port, uint8_t pin_num)
   led->init.Pin = GPIO_PIN(led->pin_num);
   led->init.Mode = GPIO_MODE_OUTPUT_PP;
   led->init.Pull = GPIO_NOPULL;
-  led->init.Speed = GPIO_SPEED_FAST;
+  led->init.Speed = GPIO_SPEED_HIGH;
   HAL_GPIO_Init(led->port, &led->init);
 
   LED_SetActiveMode(led, LED_ACTIVE_HIGH);
